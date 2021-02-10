@@ -25,8 +25,6 @@ The following is only a primer on Go Templates. For an in-depth look into Go Tem
 
 Go Templates provide an extremely simple template language that adheres to the belief that only the most basic of logic belongs in the template or view layer.
 
-{{< youtube gnJbPO-GFIw >}}
-
 ## Basic Syntax
 
 Go Templates are HTML files with the addition of [variables][variables] and [functions][functions]. Go Template variables and functions are accessible within `{{ }}`.
@@ -359,7 +357,7 @@ The following two examples are functionally the same:
 
 ### Example 2: `index`
 
-The following accesses the page parameter called "disqus_url" and escapes the HTML. This example also uses the [`index` function][index], which is built into Go Templates:
+The following accesses the page parameter called "disqus_url" and escapes the HTML. This example also uses the [`index` function](/functions/index-function/), which is built into Go Templates:
 
 ```go-html-template
 {{ index .Params "disqus_url" | html }}
@@ -648,7 +646,7 @@ Go allows you to do more than what's shown here. Using Hugo's [`where` function]
 [functions]: /functions/ "See the full list of Hugo's templating functions with a quick start reference guide and basic and advanced examples."
 [Go html/template]: https://golang.org/pkg/html/template/ "Godocs references for Go's html templating"
 [gohtmltemplate]: https://golang.org/pkg/html/template/ "Godocs references for Go's html templating"
-[index]: /functions/index/
+[index]: /functions/index-function/
 [math functions]: /functions/math/
 [partials]: /templates/partials/ "Link to the partial templates page inside of the templating section of the Hugo docs"
 [internal_templates]: /templates/internal/

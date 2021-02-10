@@ -40,12 +40,11 @@ type Type struct {
 	SubType  string `json:"subType"`  // i.e. html
 
 	// This is the optional suffix after the "+" in the MIME type,
-	//  e.g. "xml" in "applicatiion/rss+xml".
+	//  e.g. "xml" in "application/rss+xml".
 	mimeSuffix string
 
 	Delimiter string `json:"delimiter"` // e.g. "."
 
-	// TODO(bep) make this a string to make it hashable + method
 	Suffixes []string `json:"suffixes"`
 
 	// Set when doing lookup by suffix.
@@ -108,7 +107,7 @@ func (m Type) FullSuffix() string {
 	return m.Delimiter + m.Suffix()
 }
 
-// Suffix returns the file suffix without any delmiter prepended.
+// Suffix returns the file suffix without any delimiter prepended.
 func (m Type) Suffix() string {
 	if m.fileSuffix != "" {
 		return m.fileSuffix
@@ -130,17 +129,21 @@ var (
 	CSVType        = Type{MainType: "text", SubType: "csv", Suffixes: []string{"csv"}, Delimiter: defaultDelimiter}
 	HTMLType       = Type{MainType: "text", SubType: "html", Suffixes: []string{"html"}, Delimiter: defaultDelimiter}
 	JavascriptType = Type{MainType: "application", SubType: "javascript", Suffixes: []string{"js"}, Delimiter: defaultDelimiter}
-	JSONType       = Type{MainType: "application", SubType: "json", Suffixes: []string{"json"}, Delimiter: defaultDelimiter}
-	RSSType        = Type{MainType: "application", SubType: "rss", mimeSuffix: "xml", Suffixes: []string{"xml"}, Delimiter: defaultDelimiter}
-	XMLType        = Type{MainType: "application", SubType: "xml", Suffixes: []string{"xml"}, Delimiter: defaultDelimiter}
-	SVGType        = Type{MainType: "image", SubType: "svg", mimeSuffix: "xml", Suffixes: []string{"svg"}, Delimiter: defaultDelimiter}
-	TextType       = Type{MainType: "text", SubType: "plain", Suffixes: []string{"txt"}, Delimiter: defaultDelimiter}
-	TOMLType       = Type{MainType: "application", SubType: "toml", Suffixes: []string{"toml"}, Delimiter: defaultDelimiter}
-	YAMLType       = Type{MainType: "application", SubType: "yaml", Suffixes: []string{"yaml", "yml"}, Delimiter: defaultDelimiter}
+	TypeScriptType = Type{MainType: "application", SubType: "typescript", Suffixes: []string{"ts"}, Delimiter: defaultDelimiter}
+	TSXType        = Type{MainType: "text", SubType: "tsx", Suffixes: []string{"tsx"}, Delimiter: defaultDelimiter}
+	JSXType        = Type{MainType: "text", SubType: "jsx", Suffixes: []string{"jsx"}, Delimiter: defaultDelimiter}
+
+	JSONType = Type{MainType: "application", SubType: "json", Suffixes: []string{"json"}, Delimiter: defaultDelimiter}
+	RSSType  = Type{MainType: "application", SubType: "rss", mimeSuffix: "xml", Suffixes: []string{"xml"}, Delimiter: defaultDelimiter}
+	XMLType  = Type{MainType: "application", SubType: "xml", Suffixes: []string{"xml"}, Delimiter: defaultDelimiter}
+	SVGType  = Type{MainType: "image", SubType: "svg", mimeSuffix: "xml", Suffixes: []string{"svg"}, Delimiter: defaultDelimiter}
+	TextType = Type{MainType: "text", SubType: "plain", Suffixes: []string{"txt"}, Delimiter: defaultDelimiter}
+	TOMLType = Type{MainType: "application", SubType: "toml", Suffixes: []string{"toml"}, Delimiter: defaultDelimiter}
+	YAMLType = Type{MainType: "application", SubType: "yaml", Suffixes: []string{"yaml", "yml"}, Delimiter: defaultDelimiter}
 
 	// Common image types
 	PNGType  = Type{MainType: "image", SubType: "png", Suffixes: []string{"png"}, Delimiter: defaultDelimiter}
-	JPGType  = Type{MainType: "image", SubType: "jpg", Suffixes: []string{"jpg", "jpeg"}, Delimiter: defaultDelimiter}
+	JPEGType = Type{MainType: "image", SubType: "jpeg", Suffixes: []string{"jpg", "jpeg"}, Delimiter: defaultDelimiter}
 	GIFType  = Type{MainType: "image", SubType: "gif", Suffixes: []string{"gif"}, Delimiter: defaultDelimiter}
 	TIFFType = Type{MainType: "image", SubType: "tiff", Suffixes: []string{"tif", "tiff"}, Delimiter: defaultDelimiter}
 	BMPType  = Type{MainType: "image", SubType: "bmp", Suffixes: []string{"bmp"}, Delimiter: defaultDelimiter}
@@ -165,6 +168,9 @@ var DefaultTypes = Types{
 	SASSType,
 	HTMLType,
 	JavascriptType,
+	TypeScriptType,
+	TSXType,
+	JSXType,
 	JSONType,
 	RSSType,
 	XMLType,
@@ -174,7 +180,7 @@ var DefaultTypes = Types{
 	YAMLType,
 	TOMLType,
 	PNGType,
-	JPGType,
+	JPEGType,
 	AVIType,
 	MPEGType,
 	MP4Type,
@@ -370,6 +376,11 @@ func DecodeTypes(mms ...map[string]interface{}) (Types, error) {
 	sort.Sort(m)
 
 	return m, nil
+}
+
+// IsZero reports whether this Type represents a zero value.
+func (m Type) IsZero() bool {
+	return m.SubType == ""
 }
 
 // MarshalJSON returns the JSON encoding of m.

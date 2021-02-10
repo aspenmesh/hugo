@@ -92,7 +92,6 @@ func (i *Image) EncodeTo(conf ImageConfig, img image.Image, w io.Writer) error {
 	default:
 		return errors.New("format not supported")
 	}
-
 }
 
 // Height returns i's height.
@@ -123,6 +122,15 @@ func (i Image) WithSpec(s Spec) *Image {
 	return &i
 }
 
+// InitConfig reads the image config from the given reader.
+func (i *Image) InitConfig(r io.Reader) error {
+	var err error
+	i.configInit.Do(func() {
+		i.config, _, err = image.DecodeConfig(r)
+	})
+	return err
+}
+
 func (i *Image) initConfig() error {
 	var err error
 	i.configInit.Do(func() {
@@ -130,10 +138,7 @@ func (i *Image) initConfig() error {
 			return
 		}
 
-		var (
-			f      hugio.ReadSeekCloser
-			config image.Config
-		)
+		var f hugio.ReadSeekCloser
 
 		f, err = i.Spec.ReadSeekCloser()
 		if err != nil {
@@ -141,11 +146,7 @@ func (i *Image) initConfig() error {
 		}
 		defer f.Close()
 
-		config, _, err = image.DecodeConfig(f)
-		if err != nil {
-			return
-		}
-		i.config = config
+		i.config, _, err = image.DecodeConfig(f)
 	})
 
 	if err != nil {
@@ -163,7 +164,6 @@ func NewImageProcessor(cfg ImagingConfig) (*ImageProcessor, error) {
 		exif.ExcludeFields(e.ExcludeFields),
 		exif.IncludeFields(e.IncludeFields),
 	)
-
 	if err != nil {
 		return nil, err
 	}
@@ -172,7 +172,6 @@ func NewImageProcessor(cfg ImagingConfig) (*ImageProcessor, error) {
 		Cfg:         cfg,
 		exifDecoder: exifDecoder,
 	}, nil
-
 }
 
 type ImageProcessor struct {
@@ -273,7 +272,7 @@ func (f Format) DefaultExtension() string {
 func (f Format) MediaType() media.Type {
 	switch f {
 	case JPEG:
-		return media.JPGType
+		return media.JPEGType
 	case PNG:
 		return media.PNGType
 	case GIF:
@@ -325,4 +324,10 @@ func IsOpaque(img image.Image) bool {
 	}
 
 	return false
+}
+
+// ImageSource identifies and decodes an image.
+type ImageSource interface {
+	DecodeImage() (image.Image, error)
+	Key() string
 }
